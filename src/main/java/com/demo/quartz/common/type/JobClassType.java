@@ -1,10 +1,10 @@
 package com.demo.quartz.common.type;
 
+import java.util.Arrays;
+
 import com.demo.quartz.job.Job1;
 import com.demo.quartz.job.Job2;
 import org.quartz.Job;
-
-import java.util.Arrays;
 
 public enum JobClassType {
     TYPE_JOB1(Job1.class, "job1"),
@@ -28,6 +28,9 @@ public enum JobClassType {
     }
 
     public static JobClassType getJobClassByJobName(String jobName) {
-        return Arrays.stream(JobClassType.values()).filter(jobClass -> jobClass.getJobName().equals(jobName)).findFirst().orElse(JobClassType.TYPE_JOB1);
+        return Arrays.stream(JobClassType.values())
+                .filter(jobClass -> jobClass.getJobName().equals(jobName))
+                .findFirst()
+                .orElse(JobClassType.TYPE_JOB1);
     }
 }

@@ -1,31 +1,22 @@
 package com.demo.quartz.common;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
 import com.demo.quartz.common.type.JobClassType;
-import com.demo.quartz.job.Job1;
-import com.demo.quartz.job.Job2;
 import com.demo.quartz.resource.ScheduleInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -77,8 +68,8 @@ public class SchedulerManagement {
         try {
             return mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, ScheduleInfo.class));
         } catch (Exception e) {
-            e.printStackTrace();
-            this.printLogError(e.getLocalizedMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
+            this.printLogError(e.getMessage());
             return Collections.emptyList();
         }
     }
