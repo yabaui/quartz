@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,7 +20,10 @@ import org.hibernate.annotations.UpdateTimestamp;
         }
 )
 @Getter
+// jpa 에서 프록시 생성을 위해 반드시 하나의 생성자는 필요하나, 접근 권한은 protected 면 충분하다.
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+// builder 사용을 위해 제공, 내부 Builder 구현시 제거 가능
+//@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class FamilyHealthCheckupCrypto implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,11 +65,9 @@ public class FamilyHealthCheckupCrypto implements Serializable {
     @Transient
     private int riskScoreDecrypt = 0;
 
-    @Builder(builderClassName = "insertBuilder", builderMethodName = "insertBuilder")
-    public FamilyHealthCheckupCrypto(Long mbUid, String question,
-                                     String questionKey, String item,
-                                     String itemKey, String riskScore,
-                                     String targetDiseasesKey) {
+    @Builder
+    public FamilyHealthCheckupCrypto(Long mbUid, String question, String questionKey, String item, String itemKey,
+                                     String riskScore, String targetDiseasesKey, Timestamp deletedAt) {
         this.mbUid = mbUid;
         this.question = question;
         this.questionKey = questionKey;
@@ -73,44 +75,14 @@ public class FamilyHealthCheckupCrypto implements Serializable {
         this.itemKey = itemKey;
         this.riskScore = riskScore;
         this.targetDiseasesKey = targetDiseasesKey;
+        this.deletedAt = deletedAt;
     }
 
-    @Builder(builderClassName = "updatedBuilder", builderMethodName = "updatedBuilder")
-    public void updatedBuilder(Long mbUid, String question,
-                               String questionKey, String item,
-                               String itemKey, String riskScore,
-                               String targetDiseasesKey,
-                               Integer riskScoreDecrypt) {
-        if (!Objects.isNull(mbUid)) {
-            this.mbUid = mbUid;
+    public void updateRiskScore(String riskScore) throws Exception {
+        if (StringUtils.isEmpty(riskScore)) {
+            throw new Exception();
         }
 
-        if (StringUtils.isNoneEmpty(question)) {
-            this.question = question;
-        }
-
-        if (StringUtils.isNoneEmpty(questionKey)) {
-            this.questionKey = questionKey;
-        }
-
-        if (StringUtils.isNoneEmpty(item)) {
-            this.item = item;
-        }
-
-        if (StringUtils.isNoneEmpty(itemKey)) {
-            this.itemKey = itemKey;
-        }
-
-        if (StringUtils.isNoneEmpty(riskScore)) {
-            this.riskScore = riskScore;
-        }
-
-        if (StringUtils.isNoneEmpty(targetDiseasesKey)) {
-            this.targetDiseasesKey = targetDiseasesKey;
-        }
-
-        if (!Objects.isNull(riskScoreDecrypt)) {
-            this.riskScoreDecrypt = riskScoreDecrypt;
-        }
+        this.riskScore = riskScore;
     }
 }

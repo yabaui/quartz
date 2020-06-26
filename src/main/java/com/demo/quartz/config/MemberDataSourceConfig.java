@@ -18,8 +18,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @ConfigurationProperties(prefix = "datasource.member")
 @EnableJpaRepositories(
-    entityManagerFactoryRef = "entityManagerFactoryBToB",
-    transactionManagerRef = "transactionManagerBToB",
+    entityManagerFactoryRef = "entityManagerFactoryMember",
+    transactionManagerRef = "transactionManagerMember",
     basePackages = {
         "com.demo.quartz.repository.member"
     }
@@ -27,18 +27,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class MemberDataSourceConfig extends HikariConfig {
 
     @Bean
-    public DataSource dataSourceBToB() {
+    public DataSource dataSourceMember() {
         return new LazyConnectionDataSourceProxy(
             new HikariDataSource(this)
         );
     }
 
     @Bean
-    public EntityManagerFactory entityManagerFactoryBToB() {
+    public EntityManagerFactory entityManagerFactoryMember() {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 
-        factory.setDataSource(this.dataSourceBToB());
+        factory.setDataSource(this.dataSourceMember());
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         factory.setJpaPropertyMap(ImmutableMap.of(
             "hibernate.hdm2ddl.auto", "none",
@@ -53,9 +53,9 @@ public class MemberDataSourceConfig extends HikariConfig {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManagerBToB() {
+    public PlatformTransactionManager transactionManagerMember() {
         JpaTransactionManager manager = new JpaTransactionManager();
-        manager.setEntityManagerFactory(this.entityManagerFactoryBToB());
+        manager.setEntityManagerFactory(this.entityManagerFactoryMember());
 
         return manager;
     }
